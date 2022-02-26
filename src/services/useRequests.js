@@ -53,11 +53,19 @@ const useRequests = (setLoading, setCalls, setHasNextPage) => {
     );
   };
 
+  const archiveAll = async (archiveArray, setArchiveLoading) => {
+    setArchiveLoading(true);
+    await Promise.all(archiveArray.map((call) => archiveCall(call.id))).then(
+      () => setArchiveLoading(false)
+    );
+  };
+
   return {
     fetchCalls,
     authenticate,
     refreshToken,
     archiveCall,
+    archiveAll,
   };
 };
 

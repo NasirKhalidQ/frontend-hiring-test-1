@@ -13,6 +13,7 @@ import CallDetails from "./components/CallDetails";
 import dayjs from "dayjs";
 import useRequests from "./services/useRequests";
 import axiosIns from "./services/AxiosInstance";
+import Archive from "./components/Archive";
 
 function App() {
   const [key, setKey] = useState("calls");
@@ -21,12 +22,11 @@ function App() {
   const [offset, setOffset] = useState(0);
 
   const [loading, setLoading] = useState(false);
+  const [archiveLoading, setArchiveLoading] = useState(false);
+  const [archiveArray, setArchiveArray] = useState([]);
 
-  const { fetchCalls, authenticate, refreshToken, archiveCall } = useRequests(
-    setLoading,
-    setCalls,
-    setHasNextPage
-  );
+  const { fetchCalls, authenticate, refreshToken, archiveCall, archiveAll } =
+    useRequests(setLoading, setCalls, setHasNextPage);
 
   const nextPage = () => {
     setOffset(offset + 10);
@@ -122,14 +122,12 @@ function App() {
                           <CallDetails call={call} />
                         </td>
                         <td>
-                          <div className="d-grid gap-2">
-                            <Button
-                              onClick={() => archiveCall(call.id)}
-                              variant="dark"
-                            >
-                              Archive
-                            </Button>
-                          </div>
+                          <Archive
+                            call={call}
+                            archiveArray={archiveArray}
+                            setArchiveArray={setArchiveArray}
+                            archiveCall={archiveCall}
+                          />
                         </td>
                         <td>
                           <div className="d-grid gap-2">
@@ -164,6 +162,13 @@ function App() {
               </Button>
               <Button disabled={!hasNextPage} onClick={nextPage} variant="dark">
                 Next
+              </Button>
+              <Button
+                onClick={() => archiveAll(archiveArray, setArchiveLoading)}
+                variant="danger"
+                disabled={archiveLoading || archiveArray.length <= 0}
+              >
+                {archiveLoading ? "Loading..." : "Archive All"}
               </Button>
             </Container>
           </Tab>
