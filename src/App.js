@@ -8,6 +8,8 @@ import {
   Spinner,
   Alert,
 } from "react-bootstrap";
+import Pusher from "pusher-js";
+
 import React, { useEffect, useState } from "react";
 import CallDetails from "./components/CallDetails";
 import dayjs from "dayjs";
@@ -62,6 +64,19 @@ function App() {
     return () => clearInterval(timer);
   }, []);
 
+  useEffect(() => {
+    const pusher = new Pusher("d44e3d910d38a928e0be", {
+      cluster: "eu",
+      encrypted: true,
+      authEndpoint: "https://frontend-test-api.aircall.io/pusher/auth",
+    });
+    const channel = pusher.subscribe("private-aircall");
+
+    channel.bind("update-call", (data) => {
+      console.log(data);
+    });
+  }, []);
+
   return (
     <div className="d-flex m-5">
       <Container>
@@ -76,9 +91,9 @@ function App() {
               <thead>
                 <tr>
                   <th>#</th>
-                  <th>Date</th>
-                  <th>View Details</th>
-                  <th>Archive</th>
+                  <th>Date Created</th>
+                  <th>View Call Details</th>
+                  <th>Archive Call</th>
                   <th>Add Note</th>
                 </tr>
               </thead>
