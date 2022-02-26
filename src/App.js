@@ -1,24 +1,19 @@
 import "bootstrap/dist/css/bootstrap.min.css";
-import {
-  Container,
-  Row,
-  Col,
-  Tabs,
-  Tab,
-  Table,
-  Button,
-  OverlayTrigger,
-  Popover,
-} from "react-bootstrap";
+import { Container, Tabs, Tab, Table, Button } from "react-bootstrap";
 import { useEffect, useState } from "react";
 import axiosIns from "./services/AxiosInstance";
 import axios from "axios";
+import CallDetails from "./components/CallDetails";
+import dayjs from "dayjs";
 
 function App() {
   const [key, setKey] = useState("calls");
   const [calls, setCalls] = useState([]);
   const [hasNextPage, setHasNextPage] = useState(true);
   const [offset, setOffset] = useState(0);
+
+  const [showDetails, setShowDetails] = useState(false);
+  const [hideOthers, setHideOthers] = useState(false);
 
   const authenticate = async () => {
     await axios
@@ -80,72 +75,10 @@ function App() {
                 {calls.map((call, index) => (
                   <tr key={index}>
                     <td>{index + 1 + offset}</td>
-                    <td>{call.created_at}</td>
-                    <OverlayTrigger
-                      trigger="click"
-                      placement="left"
-                      overlay={
-                        <Popover>
-                          <Popover.Header as="h3">Call Details</Popover.Header>
-                          <Popover.Body>
-                            <Container className="d-flex flex-column">
-                              <div>
-                                <strong>Id:</strong> {call.id}
-                              </div>
-                              <div>
-                                <strong>Duration:</strong> {call.duration}
-                                seconds
-                              </div>
-                              <div>
-                                <strong>Is archived:</strong>
-                                {call.is_archived ? "True" : "False"}
-                              </div>
-                              <div>
-                                <strong>From:</strong> {call.from}
-                              </div>
-                              <div>
-                                <strong>To:</strong> {call.to}
-                              </div>
-                              <div>
-                                <strong>Directon:</strong> {call.direction}
-                              </div>
-                              <div>
-                                <strong>Call Type:</strong> {call.call_type}
-                              </div>
-                              <div>
-                                <strong>Via:</strong> {call.via}
-                              </div>
-                              <div>
-                                <strong>Created At:</strong> {call.created_at}
-                              </div>
-                              {call.notes.length > 0 && (
-                                <>
-                                  <div className="mt-2">
-                                    <strong>Notes:</strong>
-                                  </div>
-                                  {call.notes.map((note, index) => (
-                                    <>
-                                      <div>
-                                        <strong>({index + 1}) Note Id:</strong>{" "}
-                                        {note.id}
-                                      </div>
-                                      <div>
-                                        <strong>Note Content:</strong>{" "}
-                                        {note.content}
-                                      </div>
-                                    </>
-                                  ))}
-                                </>
-                              )}
-                            </Container>
-                          </Popover.Body>
-                        </Popover>
-                      }
-                    >
-                      <Container>
-                        <Button variant="outline-primary">View</Button>
-                      </Container>
-                    </OverlayTrigger>
+                    <td>{dayjs(call.created_at).format("D MMMM, YYYY")}</td>
+                    <td>
+                      <CallDetails call={call} />
+                    </td>
                     <td>@mdo</td>
                   </tr>
                 ))}
