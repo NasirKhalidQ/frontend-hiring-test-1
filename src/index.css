@@ -17,6 +17,10 @@ code {
 }
 
 .spinner-wrapper {
-  padding-top: 16rem !important;
-  padding-bottom: 16rem !important;
+  padding-top: 25rem !important;
+  padding-bottom: 25rem !important;
+}
+
+textarea {
+  resize: none !important;
 }

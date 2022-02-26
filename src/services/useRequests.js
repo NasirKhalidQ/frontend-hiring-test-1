@@ -23,6 +23,7 @@ const useRequests = (setLoading, setCalls, setHasNextPage) => {
       .get(`/calls/?offset=${offset}&limit=10`)
       .then((res) => {
         setCalls(
+          //sorting lexicographically
           res.data.nodes.sort(function (a, b) {
             return a.created_at < b.created_at
               ? -1
@@ -60,12 +61,22 @@ const useRequests = (setLoading, setCalls, setHasNextPage) => {
     );
   };
 
+  const addNote = async (setLoading, id, text) => {
+    setLoading(true);
+    await axiosIns
+      .post(`https://frontend-test-api.aircall.io/calls/${id}/note`, {
+        content: text,
+      })
+      .then(() => setLoading(false));
+  };
+
   return {
     fetchCalls,
     authenticate,
     refreshToken,
     archiveCall,
     archiveAll,
+    addNote,
   };
 };
 

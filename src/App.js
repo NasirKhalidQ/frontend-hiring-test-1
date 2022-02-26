@@ -12,8 +12,8 @@ import React, { useEffect, useState } from "react";
 import CallDetails from "./components/CallDetails";
 import dayjs from "dayjs";
 import useRequests from "./services/useRequests";
-import axiosIns from "./services/AxiosInstance";
 import Archive from "./components/Archive";
+import AddNote from "./components/AddNote";
 
 function App() {
   const [key, setKey] = useState("calls");
@@ -130,9 +130,7 @@ function App() {
                           />
                         </td>
                         <td>
-                          <div className="d-grid gap-2">
-                            <Button variant="dark">Add</Button>
-                          </div>
+                          <AddNote call={call} />
                         </td>
                       </tr>
                     </React.Fragment>
@@ -168,7 +166,7 @@ function App() {
                 variant="danger"
                 disabled={archiveLoading || archiveArray.length <= 0}
               >
-                {archiveLoading ? "Loading..." : "Archive All"}
+                {archiveLoading ? "Archiving..." : "Archive All"}
               </Button>
             </Container>
           </Tab>
