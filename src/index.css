@@ -15,3 +15,8 @@ code {
 .popover {
   max-width: 100% !important;
 }
+
+.spinner-wrapper {
+  padding-top: 16rem !important;
+  padding-bottom: 16rem !important;
+}

@@ -6,6 +6,7 @@ const CallDetails = ({ call }) => {
     <OverlayTrigger
       trigger="click"
       placement="left"
+      rootClose
       overlay={
         <Popover>
           <Popover.Header as="h3">Call Details</Popover.Header>

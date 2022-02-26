@@ -1,10 +1,18 @@
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Container, Tabs, Tab, Table, Button, Spinner } from "react-bootstrap";
-import { useEffect, useState } from "react";
-import axiosIns from "./services/AxiosInstance";
-import axios from "axios";
+import {
+  Container,
+  Tabs,
+  Tab,
+  Table,
+  Button,
+  Spinner,
+  Alert,
+} from "react-bootstrap";
+import React, { useEffect, useState } from "react";
 import CallDetails from "./components/CallDetails";
 import dayjs from "dayjs";
+import useRequests from "./services/useRequests";
+import axiosIns from "./services/AxiosInstance";
 
 function App() {
   const [key, setKey] = useState("calls");
@@ -12,54 +20,13 @@ function App() {
   const [hasNextPage, setHasNextPage] = useState(true);
   const [offset, setOffset] = useState(0);
 
-  const [showDetails, setShowDetails] = useState(false);
-  const [hideOthers, setHideOthers] = useState(false);
-
   const [loading, setLoading] = useState(false);
 
-  const authenticate = async () => {
-    setLoading(true);
-    await axios
-      .post("https://frontend-test-api.aircall.io/auth/login/", {
-        username: "nasir",
-        password: "1234",
-      })
-      .then((res) => {
-        localStorage.setItem("token", res.data.access_token);
-        localStorage.setItem("timestamp", dayjs());
-      })
-      .then(() => setLoading(false));
-  };
-
-  const fetchCalls = async (offset) => {
-    setLoading(true);
-    await axiosIns
-      .get(`/calls/?offset=${offset}&limit=10`)
-      .then((res) => {
-        setCalls(
-          res.data.nodes.sort(function (a, b) {
-            return a.created_at < b.created_at
-              ? -1
-              : a.created_at > b.created_at
-              ? 1
-              : 0;
-          })
-        );
-        setHasNextPage(res.data.hasNextPage);
-      })
-      .then(() => setLoading(false));
-  };
-
-  const refreshToken = async () => {
-    setLoading(true);
-    await axiosIns
-      .post("https://frontend-test-api.aircall.io/auth/refresh-token")
-      .then((res) => {
-        localStorage.setItem("token", res.data.access_token);
-        localStorage.setItem("timestamp", dayjs());
-      })
-      .then(() => setLoading(false));
-  };
+  const { fetchCalls, authenticate, refreshToken, archiveCall } = useRequests(
+    setLoading,
+    setCalls,
+    setHasNextPage
+  );
 
   const nextPage = () => {
     setOffset(offset + 10);
@@ -68,15 +35,25 @@ function App() {
     setOffset(offset - 10);
   };
 
+  //run every time page number is changed
   useEffect(() => {
-    fetchCalls(offset);
+    if (localStorage.getItem("token")) {
+      fetchCalls(offset);
+    }
   }, [offset]);
 
+  //authenticate initially when the page is loaded
+  useEffect(() => {
+    authenticate().then(() => {
+      fetchCalls(offset);
+    });
+  }, []);
+
+  //check every 30 seconds for token expiry to refresh token
   useEffect(() => {
     const timer = setInterval(() => {
       if (localStorage.getItem("timestamp")) {
         const timestamp = localStorage.getItem("timestamp");
-        console.log(timestamp);
         if (dayjs().diff(timestamp, "minute") >= 9) {
           refreshToken();
         }
@@ -94,7 +71,7 @@ function App() {
           onSelect={(k) => setKey(k)}
           className="my-3"
         >
-          <Tab eventKey="calls" title="Calls">
+          <Tab eventKey="calls" title="All Calls">
             <Table bordered>
               <thead>
                 <tr>
@@ -108,27 +85,59 @@ function App() {
               {loading ? (
                 <tbody className="text-center">
                   <tr>
-                    <td colSpan={5}>
+                    <td className="spinner-wrapper" colSpan={5}>
                       <Spinner animation="border" />
                     </td>
                   </tr>
                 </tbody>
               ) : (
                 <tbody>
-                  {calls.map((call, index) => (
-                    <tr key={index}>
-                      <td>{index + 1 + offset}</td>
-                      <td>{dayjs(call.created_at).format("D MMMM, YYYY")}</td>
-                      <td>
-                        <CallDetails call={call} />
-                      </td>
-                      <td>@mdo</td>
-                      <td>
-                        <div className="d-grid gap-2">
-                          <Button variant="dark">Add</Button>
-                        </div>
+                  {calls.length > 0 && (
+                    <tr>
+                      <td colSpan={5}>
+                        <Alert className="m-0 p-2" variant="secondary">
+                          {dayjs(calls[0].created_at).format("D MMMM, YYYY")}
+                        </Alert>
                       </td>
                     </tr>
+                  )}
+
+                  {calls.map((call, index) => (
+                    <React.Fragment key={index}>
+                      {index > 0 &&
+                      dayjs(call.created_at).format("DD") !==
+                        dayjs(calls[index - 1].created_at).format("DD") ? (
+                        <tr>
+                          <td colSpan={5}>
+                            <Alert className="m-0 p-2" variant="secondary">
+                              {dayjs(call.created_at).format("D MMMM, YYYY")}
+                            </Alert>
+                          </td>
+                        </tr>
+                      ) : null}
+                      <tr>
+                        <td>{index + 1 + offset}</td>
+                        <td>{dayjs(call.created_at).format("D MMMM, YYYY")}</td>
+                        <td>
+                          <CallDetails call={call} />
+                        </td>
+                        <td>
+                          <div className="d-grid gap-2">
+                            <Button
+                              onClick={() => archiveCall(call.id)}
+                              variant="dark"
+                            >
+                              Archive
+                            </Button>
+                          </div>
+                        </td>
+                        <td>
+                          <div className="d-grid gap-2">
+                            <Button variant="dark">Add</Button>
+                          </div>
+                        </td>
+                      </tr>
+                    </React.Fragment>
                   ))}
                 </tbody>
               )}
