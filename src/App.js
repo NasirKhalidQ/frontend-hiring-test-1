@@ -1,5 +1,15 @@
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Container, Row, Col, Tabs, Tab, Table, Button } from "react-bootstrap";
+import {
+  Container,
+  Row,
+  Col,
+  Tabs,
+  Tab,
+  Table,
+  Button,
+  OverlayTrigger,
+  Popover,
+} from "react-bootstrap";
 import { useEffect, useState } from "react";
 import axiosIns from "./services/AxiosInstance";
 import axios from "axios";
@@ -57,7 +67,7 @@ function App() {
           className="my-3"
         >
           <Tab eventKey="calls" title="Calls">
-            <Table striped bordered hover>
+            <Table bordered>
               <thead>
                 <tr>
                   <th>#</th>
@@ -69,33 +79,101 @@ function App() {
               <tbody>
                 {calls.map((call, index) => (
                   <tr key={index}>
-                    <td>{index + 1}</td>
+                    <td>{index + 1 + offset}</td>
                     <td>{call.created_at}</td>
-                    <td>Otto</td>
+                    <OverlayTrigger
+                      trigger="click"
+                      placement="left"
+                      overlay={
+                        <Popover>
+                          <Popover.Header as="h3">Call Details</Popover.Header>
+                          <Popover.Body>
+                            <Container className="d-flex flex-column">
+                              <div>
+                                <strong>Id:</strong> {call.id}
+                              </div>
+                              <div>
+                                <strong>Duration:</strong> {call.duration}
+                                seconds
+                              </div>
+                              <div>
+                                <strong>Is archived:</strong>
+                                {call.is_archived ? "True" : "False"}
+                              </div>
+                              <div>
+                                <strong>From:</strong> {call.from}
+                              </div>
+                              <div>
+                                <strong>To:</strong> {call.to}
+                              </div>
+                              <div>
+                                <strong>Directon:</strong> {call.direction}
+                              </div>
+                              <div>
+                                <strong>Call Type:</strong> {call.call_type}
+                              </div>
+                              <div>
+                                <strong>Via:</strong> {call.via}
+                              </div>
+                              <div>
+                                <strong>Created At:</strong> {call.created_at}
+                              </div>
+                              {call.notes.length > 0 && (
+                                <>
+                                  <div className="mt-2">
+                                    <strong>Notes:</strong>
+                                  </div>
+                                  {call.notes.map((note, index) => (
+                                    <>
+                                      <div>
+                                        <strong>({index + 1}) Note Id:</strong>{" "}
+                                        {note.id}
+                                      </div>
+                                      <div>
+                                        <strong>Note Content:</strong>{" "}
+                                        {note.content}
+                                      </div>
+                                    </>
+                                  ))}
+                                </>
+                              )}
+                            </Container>
+                          </Popover.Body>
+                        </Popover>
+                      }
+                    >
+                      <Container>
+                        <Button variant="outline-primary">View</Button>
+                      </Container>
+                    </OverlayTrigger>
                     <td>@mdo</td>
                   </tr>
                 ))}
               </tbody>
             </Table>
+            <Container className="d-flex gap-4">
+              <Button onClick={authenticate} variant="dark">
+                Authenticate
+              </Button>
+              <Button onClick={() => fetchCalls(offset)} variant="dark">
+                Fetch Calls
+              </Button>
+              <Button
+                disabled={offset <= 0}
+                onClick={previousPage}
+                variant="dark"
+              >
+                Previous
+              </Button>
+              <Button disabled={!hasNextPage} onClick={nextPage} variant="dark">
+                Next
+              </Button>
+            </Container>
           </Tab>
           <Tab eventKey="archived" title="Archived">
             Hello 22
           </Tab>
         </Tabs>
-        <Container className="d-flex gap-4">
-          <Button onClick={authenticate} variant="dark">
-            Authenticate
-          </Button>
-          <Button onClick={() => fetchCalls(offset)} variant="dark">
-            Fetch Calls
-          </Button>
-          <Button disabled={offset <= 0} onClick={previousPage} variant="dark">
-            Previous
-          </Button>
-          <Button disabled={!hasNextPage} onClick={nextPage} variant="dark">
-            Next
-          </Button>
-        </Container>
       </Container>
     </div>
   );
