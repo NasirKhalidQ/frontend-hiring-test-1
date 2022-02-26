@@ -1,6 +1,6 @@
 import dayjs from "dayjs";
 import { Container, Button, OverlayTrigger, Popover } from "react-bootstrap";
-
+import eye from "../assets/eye-regular.svg";
 const CallDetails = ({ call }) => {
   return (
     <OverlayTrigger
@@ -64,8 +64,10 @@ const CallDetails = ({ call }) => {
         </Popover>
       }
     >
-      <div className="d-grid gap-2">
-        <Button variant="dark">View</Button>
+      <div className="d-grid">
+        <Button variant="light">
+          <img width={20} height={20} src={eye} alt="" />
+        </Button>
       </div>
     </OverlayTrigger>
   );

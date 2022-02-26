@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Button, Form } from "react-bootstrap";
+import box from "../assets/box-solid.svg";
 
 const Archive = ({ call, archiveArray, setArchiveArray, archiveCall }) => {
   const [checked, setChecked] = useState(false);
@@ -15,8 +16,8 @@ const Archive = ({ call, archiveArray, setArchiveArray, archiveCall }) => {
   return (
     <div className="row">
       <div className="col d-grid">
-        <Button onClick={() => archiveCall(call.id)} variant="dark">
-          Archive
+        <Button onClick={() => archiveCall(call.id)} variant="light">
+          <img width={20} height={20} src={box} alt="" />
         </Button>
       </div>
       <div className="col d-grid align-items-center">

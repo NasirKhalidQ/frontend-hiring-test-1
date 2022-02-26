@@ -6,7 +6,8 @@ import {
   Form,
 } from "react-bootstrap";
 import React, { useState } from "react";
-import useRequests from "../services/useRequests";
+import useRequests from "../hooks/useRequests";
+
 const AddNote = ({ call }) => {
   const [loading, setLoading] = useState(false);
   const [text, setText] = useState("");
