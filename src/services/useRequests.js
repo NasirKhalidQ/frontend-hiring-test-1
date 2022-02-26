@@ -3,12 +3,15 @@ import dayjs from "dayjs";
 import axiosIns from "./AxiosInstance";
 
 const useRequests = (setLoading, setCalls, setHasNextPage) => {
+  const { REACT_APP_API_BASE_URL, REACT_APP_USERNAME, REACT_APP_PASSWORD } =
+    process.env;
+
   const authenticate = async () => {
     setLoading(true);
     await axios
-      .post("https://frontend-test-api.aircall.io/auth/login/", {
-        username: "nasir",
-        password: "1234",
+      .post(`${REACT_APP_API_BASE_URL}auth/login`, {
+        username: REACT_APP_USERNAME,
+        password: REACT_APP_PASSWORD,
       })
       .then((res) => {
         localStorage.setItem("token", res.data.access_token);
@@ -40,7 +43,7 @@ const useRequests = (setLoading, setCalls, setHasNextPage) => {
   const refreshToken = async () => {
     setLoading(true);
     await axiosIns
-      .post("https://frontend-test-api.aircall.io/auth/refresh-token")
+      .post("/auth/refresh-token")
       .then((res) => {
         localStorage.setItem("token", res.data.access_token);
         localStorage.setItem("timestamp", dayjs());
@@ -49,9 +52,7 @@ const useRequests = (setLoading, setCalls, setHasNextPage) => {
   };
 
   const archiveCall = async (id) => {
-    await axiosIns.put(
-      `https://frontend-test-api.aircall.io/calls/${id}/archive`
-    );
+    await axiosIns.put(`/calls/${id}/archive`);
   };
 
   const archiveAll = async (archiveArray, setArchiveLoading) => {
@@ -64,7 +65,7 @@ const useRequests = (setLoading, setCalls, setHasNextPage) => {
   const addNote = async (setLoading, id, text) => {
     setLoading(true);
     await axiosIns
-      .post(`https://frontend-test-api.aircall.io/calls/${id}/note`, {
+      .post(`/calls/${id}/note`, {
         content: text,
       })
       .then(() => setLoading(false));

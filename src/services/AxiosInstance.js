@@ -1,9 +1,9 @@
 import axios from "axios";
 
 let headers = {};
-
+const { REACT_APP_API_BASE_URL } = process.env;
 const axiosIns = axios.create({
-  baseURL: "https://frontend-test-api.aircall.io/",
+  baseURL: REACT_APP_API_BASE_URL,
   headers,
 });
 

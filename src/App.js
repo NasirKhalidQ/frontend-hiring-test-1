@@ -18,6 +18,12 @@ import Archive from "./components/Archive";
 import AddNote from "./components/AddNote";
 
 function App() {
+  const {
+    REACT_APP_PUSHER_AUTH_ENDPOINT,
+    REACT_APP_PUSHER_APP_CLUSTER,
+    REACT_APP_PUSHER_API_KEY,
+  } = process.env;
+
   const [key, setKey] = useState("calls");
   const [calls, setCalls] = useState([]);
   const [hasNextPage, setHasNextPage] = useState(true);
@@ -65,10 +71,10 @@ function App() {
   }, []);
 
   useEffect(() => {
-    const pusher = new Pusher("d44e3d910d38a928e0be", {
-      cluster: "eu",
+    const pusher = new Pusher(REACT_APP_PUSHER_API_KEY, {
+      cluster: REACT_APP_PUSHER_APP_CLUSTER,
       encrypted: true,
-      authEndpoint: "https://frontend-test-api.aircall.io/pusher/auth",
+      authEndpoint: REACT_APP_PUSHER_AUTH_ENDPOINT,
     });
     const channel = pusher.subscribe("private-aircall");
 
