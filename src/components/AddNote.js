@@ -6,7 +6,7 @@ import {
   Form,
 } from "react-bootstrap";
 import React, { useState } from "react";
-import useRequests from "../hooks/useRequests";
+import useRequests from "../utils/useRequests";
 
 const AddNote = ({ call, setShowToast, setToastString }) => {
   const [loading, setLoading] = useState(false);

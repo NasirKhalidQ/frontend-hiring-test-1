@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import { ToggleButton, ToggleButtonGroup } from "react-bootstrap";
-import useRequests from "../hooks/useRequests";
+import useRequests from "../utils/useRequests";
 import axiosIns from "../utils/AxiosInstance";
 
 const FilteredButtons = ({
@@ -97,21 +97,22 @@ const FilteredButtons = ({
         })
         .then(() => setLoading(false));
     };
-
-    if (active === "All Calls") {
-      allCalls();
-    } else if (active === "Archived Calls") {
-      archive();
-    } else if (active === "Missed Calls") {
-      missed();
-    } else if (active === "Answered Calls") {
-      answered();
-    } else if (active === "Voicemail Calls") {
-      voicemail();
-    } else if (active === "Inbound Calls") {
-      inbound();
-    } else if (active === "Outbound Calls") {
-      outbound();
+    if (localStorage.getItem("token")) {
+      if (active === "All Calls") {
+        allCalls();
+      } else if (active === "Archived Calls") {
+        archive();
+      } else if (active === "Missed Calls") {
+        missed();
+      } else if (active === "Answered Calls") {
+        answered();
+      } else if (active === "Voicemail Calls") {
+        voicemail();
+      } else if (active === "Inbound Calls") {
+        inbound();
+      } else if (active === "Outbound Calls") {
+        outbound();
+      }
     }
   }, [active, offset]);
 

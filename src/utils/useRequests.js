@@ -1,6 +1,6 @@
 import axios from "axios";
 import dayjs from "dayjs";
-import axiosIns from "../utils/AxiosInstance";
+import axiosIns from "./AxiosInstance";
 
 const useRequests = (setLoading, setCalls, setHasNextPage) => {
   const { REACT_APP_API_BASE_URL, REACT_APP_USERNAME, REACT_APP_PASSWORD } =
