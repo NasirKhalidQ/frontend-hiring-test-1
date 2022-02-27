@@ -8,14 +8,17 @@ import {
 import React, { useState } from "react";
 import useRequests from "../hooks/useRequests";
 
-const AddNote = ({ call }) => {
+const AddNote = ({ call, setShowToast, setToastString }) => {
   const [loading, setLoading] = useState(false);
   const [text, setText] = useState("");
 
   const { addNote } = useRequests();
   const handleAdd = async () => {
-    await addNote(setLoading, call.id, text);
-    setText("");
+    await addNote(setLoading, call.id, text).then(() => {
+      setText("");
+      setToastString(`Successfully added note to call`);
+      setShowToast(true);
+    });
   };
 
   const handleChange = (e) => {

@@ -1,5 +1,13 @@
 import "bootstrap/dist/css/bootstrap.min.css";
-import { Container, Tabs, Tab, Table, Spinner, Alert } from "react-bootstrap";
+import {
+  Container,
+  Tabs,
+  Tab,
+  Table,
+  Spinner,
+  Alert,
+  Toast,
+} from "react-bootstrap";
 // import Pusher from "pusher-js";
 
 import React, { useEffect, useState } from "react";
@@ -21,6 +29,8 @@ function HomePage() {
   const [calls, setCalls] = useState([]);
   const [hasNextPage, setHasNextPage] = useState(true);
   const [offset, setOffset] = useState(0);
+  const [showToast, setShowToast] = useState(false);
+  const [toastString, setToastString] = useState("");
 
   const [loading, setLoading] = useState(false);
   const [archiveLoading, setArchiveLoading] = useState(false);
@@ -73,6 +83,23 @@ function HomePage() {
   return (
     <div className="d-flex m-5">
       <Container>
+        <Toast
+          onClose={() => setShowToast(false)}
+          show={showToast}
+          delay={5000}
+          autohide
+        >
+          <Toast.Header>
+            <img
+              src="holder.js/20x20?text=%20"
+              className="rounded me-2"
+              alt=""
+            />
+            <strong className="me-auto">API call completed</strong>
+            <small>success</small>
+          </Toast.Header>
+          <Toast.Body>{toastString}</Toast.Body>
+        </Toast>
         <Tabs
           id="controlled-tab-example"
           activeKey={key}
@@ -135,10 +162,16 @@ function HomePage() {
                             archiveArray={archiveArray}
                             setArchiveArray={setArchiveArray}
                             archiveCall={archiveCall}
+                            setShowToast={setShowToast}
+                            setToastString={setToastString}
                           />
                         </td>
                         <td>
-                          <AddNote call={call} />
+                          <AddNote
+                            setShowToast={setShowToast}
+                            setToastString={setToastString}
+                            call={call}
+                          />
                         </td>
                       </tr>
                     </React.Fragment>
@@ -161,6 +194,8 @@ function HomePage() {
           archiveLoading={archiveLoading}
           setArchiveLoading={setArchiveLoading}
           hasNextPage={hasNextPage}
+          setToastString={setToastString}
+          setShowToast={setShowToast}
         />
       </Container>
     </div>
