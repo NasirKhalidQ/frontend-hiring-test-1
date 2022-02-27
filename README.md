@@ -2,7 +2,7 @@
 
 This test is a part of the hiring process at TuringTech for the Frontend Engineer position.
 
-Website is deployed [here]()
+Website is deployed [here](https://turing-test-nasir.netlify.app/)
 
 ## Technologies used ⚙
 
