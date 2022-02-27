@@ -1,22 +1,13 @@
 import "bootstrap/dist/css/bootstrap.min.css";
-import {
-  Container,
-  Tabs,
-  Tab,
-  Table,
-  Spinner,
-  Alert,
-  Toast,
-} from "react-bootstrap";
+import { Container, Tabs, Tab, Toast } from "react-bootstrap";
 // import Pusher from "pusher-js";
 
 import React, { useEffect, useState } from "react";
 import useRequests from "../hooks/useRequests";
 import dayjs from "dayjs";
-import CallDetails from "../components/CallDetails";
-import Archive from "../components/Archive";
-import AddNote from "../components/AddNote";
 import Buttons from "../components/Buttons";
+import CallsTable from "../components/CallsTable";
+import FilteredButtons from "../components/FilterButtons";
 
 function HomePage() {
   // const {
@@ -25,26 +16,21 @@ function HomePage() {
   //   REACT_APP_PUSHER_API_KEY,
   // } = process.env;
 
-  const [key, setKey] = useState("calls");
   const [calls, setCalls] = useState([]);
   const [hasNextPage, setHasNextPage] = useState(true);
   const [offset, setOffset] = useState(0);
+  const [active, setActive] = useState("All Calls");
+
   const [showToast, setShowToast] = useState(false);
   const [toastString, setToastString] = useState("");
 
   const [loading, setLoading] = useState(false);
   const [archiveLoading, setArchiveLoading] = useState(false);
+
   const [archiveArray, setArchiveArray] = useState([]);
 
   const { fetchCalls, authenticate, refreshToken, archiveCall, archiveAll } =
     useRequests(setLoading, setCalls, setHasNextPage);
-
-  //run every time page number is changed
-  useEffect(() => {
-    if (localStorage.getItem("token")) {
-      fetchCalls(offset);
-    }
-  }, [offset]);
 
   //authenticate initially when the page is loaded
   useEffect(() => {
@@ -84,104 +70,39 @@ function HomePage() {
     <div className="d-flex m-5">
       <Container>
         <Toast
+          className="mb-1"
           onClose={() => setShowToast(false)}
           show={showToast}
           delay={5000}
           autohide
         >
           <Toast.Header>
-            <img
-              src="holder.js/20x20?text=%20"
-              className="rounded me-2"
-              alt=""
-            />
             <strong className="me-auto">API call completed</strong>
             <small>success</small>
           </Toast.Header>
           <Toast.Body>{toastString}</Toast.Body>
         </Toast>
-        <Tabs
-          id="controlled-tab-example"
-          activeKey={key}
-          onSelect={(k) => setKey(k)}
-          className="my-3"
-        >
-          <Tab eventKey="calls" title="All Calls">
-            <Table bordered>
-              <thead>
-                <tr>
-                  <th>#</th>
-                  <th>Date Created</th>
-                  <th>View Call Details</th>
-                  <th>Archive Call</th>
-                  <th>Add Note</th>
-                </tr>
-              </thead>
-              {loading ? (
-                <tbody className="text-center">
-                  <tr>
-                    <td className="spinner-wrapper" colSpan={5}>
-                      <Spinner animation="border" />
-                    </td>
-                  </tr>
-                </tbody>
-              ) : (
-                <tbody>
-                  {calls.length > 0 && (
-                    <tr>
-                      <td colSpan={5}>
-                        <Alert className="m-0 p-2" variant="secondary">
-                          {dayjs(calls[0].created_at).format("D MMMM, YYYY")}
-                        </Alert>
-                      </td>
-                    </tr>
-                  )}
-
-                  {calls.map((call, index) => (
-                    <React.Fragment key={index}>
-                      {index > 0 &&
-                      dayjs(call.created_at).format("DD") !==
-                        dayjs(calls[index - 1].created_at).format("DD") ? (
-                        <tr>
-                          <td colSpan={5}>
-                            <Alert className="m-0 p-2" variant="secondary">
-                              {dayjs(call.created_at).format("D MMMM, YYYY")}
-                            </Alert>
-                          </td>
-                        </tr>
-                      ) : null}
-                      <tr>
-                        <td>{index + 1 + offset}</td>
-                        <td>{dayjs(call.created_at).format("D MMMM, YYYY")}</td>
-                        <td>
-                          <CallDetails call={call} />
-                        </td>
-                        <td>
-                          <Archive
-                            call={call}
-                            archiveArray={archiveArray}
-                            setArchiveArray={setArchiveArray}
-                            archiveCall={archiveCall}
-                            setShowToast={setShowToast}
-                            setToastString={setToastString}
-                          />
-                        </td>
-                        <td>
-                          <AddNote
-                            setShowToast={setShowToast}
-                            setToastString={setToastString}
-                            call={call}
-                          />
-                        </td>
-                      </tr>
-                    </React.Fragment>
-                  ))}
-                </tbody>
-              )}
-            </Table>
-          </Tab>
-          <Tab eventKey="archived" title="Archived">
-            Hello 22
+        <FilteredButtons
+          active={active}
+          setActive={setActive}
+          calls={calls}
+          setCalls={setCalls}
+          setLoading={setLoading}
+          offset={offset}
+          setHasNextPage={setHasNextPage}
+        />
+        <Tabs className="my-3">
+          <Tab eventKey="calls" title={active}>
+            <CallsTable
+              archiveArray={archiveArray}
+              setArchiveArray={setArchiveArray}
+              archiveCall={archiveCall}
+              setShowToast={setShowToast}
+              setToastString={setToastString}
+              calls={calls}
+              loading={loading}
+              offset={offset}
+            />
           </Tab>
         </Tabs>
         <Buttons
